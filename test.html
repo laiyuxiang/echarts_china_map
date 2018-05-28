@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<!-- Set render engine for 360 browser -->
+	<meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- HTML5 shim for IE8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <![endif]-->
+
+	<link href="./css/theme.min.css" rel="stylesheet">
+    <link href="./css/simplebootadmin.css" rel="stylesheet">
+    <link href="./css/default.css" rel="stylesheet" />
+    <link href="./css/font-awesome.min.css"  rel="stylesheet" type="text/css">
+    <style>
+		form .input-order{margin-bottom: 0px;padding:3px;width:40px;}
+		.table-actions{margin-top: 5px; margin-bottom: 5px;padding:0px;}
+		.table-list{margin-bottom: 0px;}
+	</style>
+	<!--[if IE 7]>
+	<link rel="stylesheet" href="/daikuan/public/simpleboot/font-awesome/4.4.0/css/font-awesome-ie7.min.css">
+	<![endif]-->
+	<script type="text/javascript">
+	//全局变量
+	var GV = {
+	    ROOT: "/daikuan/",
+	    WEB_ROOT: "/daikuan/",
+	    JS_ROOT: "public/js/",
+	    APP:'Admin'/*当前应用名*/
+	};
+	</script>
+	<script src="./js/jquery.js"></script>
+    <script src="./wind.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script>
+    	$(function(){
+    		$("[data-toggle='tooltip']").tooltip();
+    	});
+    </script>
+<style>
+		#think_page_trace_open{
+			z-index:9999;
+		}
+	</style><style>
+	.aul li{
+		float: left;
+		list-style:none;
+		border: 1px solid #e5e5e5;
+		margin: 5px 5px 0 0;
+		width:23%;
+		margin-bottom: 50px;;
+	}
+	.aul li img{
+		width:50px;
+		height: 50px;
+	}
+
+</style>
+</head>
+
+
+<body>
+<div>
+	<ul class="aul" style="display:block;">
+		<li><span class="img"><img  src="/daikuan/public/images/100.jpg"></span> <span class="text">今日注册人数:<strong>0</strong></span></li>
+		<li><span class="img"><img  src="/daikuan/public/images/100.jpg"></span> <span class="text">总注册人数:<strong>29</strong></span></li>
+		<li><span class="img"><img  src="/daikuan/public/images/100.jpg"></span> <span class="text">今日认证人数:<strong>0</strong></span></li>
+		<li><span class="img"><img  src="/daikuan/public/images/100.jpg"></span> <span class="text">认证总人数:<strong>11</strong></span></li>
+	</ul>
+</div>
+<div style="margin-top: 30px;display: block">
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+
+<div id="main_map" style="height:400px;width:50%;float: left;margin-bottom: 0px;"></div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 50%;height:400px;float:left;margin-bottom: 0px;"></div>
+</div>
+<!-- ECharts单文件引入 -->
+<script type="text/javascript" src="./js/echarts.js"></script>
+<script type="text/javascript">
+	// 路径配置
+	require.config({
+		paths: {
+			echarts: 'http://echarts.baidu.com/build/dist'
+		}
+	});
+
+	// 使用
+	require(
+			[
+				'echarts',
+				'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+				'echarts/chart/map', // 使用柱状图就加载bar模块，按需加载
+				'echarts/chart/pie'
+			],
+			function (ec) {
+				// 基于准备好的dom，初始化echarts图表
+				var myChart_map = ec.init(document.getElementById('main_map'));
+
+				var itemStyle = {
+					normal:{label:{
+						show:true,
+						formatter:'{b}',
+						textStyle: {fontSize: 10,fontWeight : 'bold'}
+					}},
+					emphasis:{label:{show:true}}
+				};
+
+				var option_map = {
+					title : {
+						text: '全国借款总人数:4',
+						subtext: '',
+						x:'left'
+					},
+					tooltip : {
+						trigger: 'item'
+					},
+
+					dataRange: {
+						min: 0,
+						max: 2500,
+						x: 'left',
+						y: 'bottom',
+						text:['高','低'],           // 文本，默认为数值文本
+						calculable : true
+					},
+
+
+					series : [
+						{
+							name: '借款人数',
+							type: 'map',
+							mapType: 'china',
+							selectedMode: 'single', //选中模式，可以设置多选模式和单选，不能选择则删除删除属性
+							roam: false,
+//                            itemStyle:{
+//                                normal:{label:{show:true}},
+//                                emphasis:{label:{show:true}}
+//                            },
+							itemStyle: itemStyle,
+							data:[{"value":"0","name":null},{"value":"3","name":"北京","selected":true},{"value":"1","name":"黑龙江"}],
+
+						},
+
+
+
+					]
+				};
+				var ecConfig = require('echarts/config');
+				myChart_map.on(ecConfig.EVENT.MAP_SELECTED, function (param){
+					var selected = param.selected;
+					for (var p in selected) {
+						if (selected[p]) {
+							switch(p){
+								default:
+									location.href ='/daikuan/index.php?g=Admin&m=Main&a=index&provice='+p;
+									break;
+							}
+
+						}
+					}
+				});
+				// 为echarts对象加载数据
+				myChart_map.setOption(option_map);
+
+
+				//条形图
+				// 基于准备好的dom，初始化echarts图表
+				var myChart_tx= ec.init(document.getElementById('main'));
+
+
+
+				// 指定图表的配置项和数据
+				var option_tx = {
+					title : {
+						text: '北京总借款人数:3',
+						subtext: ''
+					},
+					tooltip : {
+						trigger: 'axis'
+					},
+					legend: {
+						data:['借款人数']
+					},
+
+					calculable : true,
+					xAxis : [
+						{
+							type : 'value',
+							boundaryGap : [0, 0.01]
+						}
+					],
+					yAxis : [
+						{
+							type : 'category',
+							data : ["北京2","北京7"]						}
+					],
+					series : [
+						{
+							name:'借款人数',
+							type:'bar',
+							data: ["2","1"]						}
+					]
+				};
+				// 为echarts对象加载数据
+				myChart_tx.setOption(option_tx);
+
+			}
+	);
+
+	//条形
+	// 基于准备好的dom，初始化echarts实例
+	var myChart = echarts.init(document.getElementById('main'));
+
+
+
+	// 使用刚指定的配置项和数据显示图表。
+	myChart.setOption(option);
+
+
+</script>
+</body>
+
